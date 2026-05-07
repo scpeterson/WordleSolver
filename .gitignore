@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+
+# JetBrains / Rider local state
+.idea/
+
+# .NET build output
+bin/
+obj/
+
+# User-specific .NET files
+*.user
+*.suo
+*.rsuser
+*.userosscache
+*.sln.docstates
+
+# Test and coverage output
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# Logs
+*.log
