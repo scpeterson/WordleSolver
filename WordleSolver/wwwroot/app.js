@@ -11,49 +11,116 @@ const initialGuess = () => ({
   feedback: ["absent", "absent", "absent", "absent", "absent"]
 });
 
-const init = {
+const initialModel = () => ({
   guesses: [initialGuess()],
   possibilities: [],
   count: 0,
   customCandidates: "",
   error: "",
   loading: false
+});
+
+const cleanGuess = value =>
+  value
+    .slice(0, 5)
+    .replace(/[^a-z]/gi, "");
+
+const parseCandidates = value =>
+  value
+    .split(/\s|,/)
+    .map(word => word.trim().toLowerCase())
+    .filter(Boolean);
+
+const updateGuess = (guesses, id, transform) =>
+  guesses.map(guess =>
+    guess.id === id ? transform(guess) : guess
+  );
+
+const updateFeedbackAt = (feedback, index, transform) =>
+  feedback.map((item, itemIndex) =>
+    itemIndex === index ? transform(item) : item
+  );
+
+const nextFeedback = current => {
+  const index = feedbackCycle.indexOf(current);
+  return feedbackCycle[(index + 1) % feedbackCycle.length];
 };
 
-let model = init;
+const toTokenString = feedback =>
+  feedback.map(item => feedbackLabels[item]).join("");
+
+const guessToRequest = guess => ({
+  guess: guess.guess,
+  feedback: toTokenString(guess.feedback)
+});
+
+const solveRequest = state => {
+  const candidates = parseCandidates(state.customCandidates);
+
+  return {
+    guesses: state.guesses.map(guessToRequest),
+    candidates: candidates.length > 0 ? candidates : null
+  };
+};
+
+let model = initialModel();
 
 const update = (message, state) => {
   switch (message.type) {
     case "guessChanged":
       return {
         ...state,
-        guesses: state.guesses.map(g =>
-          g.id === message.id ? { ...g, guess: message.value.slice(0, 5).replace(/[^a-z]/gi, "") } : g
-        )
+        guesses: updateGuess(state.guesses, message.id, guess => (
+          { ...guess, guess: cleanGuess(message.value) }
+        ))
       };
     case "feedbackChanged":
       return {
         ...state,
-        guesses: state.guesses.map(g =>
-          g.id === message.id
-            ? { ...g, feedback: g.feedback.map((f, i) => i === message.index ? nextFeedback(f) : f) }
-            : g
-        )
+        guesses: updateGuess(state.guesses, message.id, guess => (
+          {
+            ...guess,
+            feedback: updateFeedbackAt(guess.feedback, message.index, nextFeedback)
+          }
+        ))
       };
     case "addGuess":
-      return { ...state, guesses: [...state.guesses, initialGuess()] };
+      return {
+        ...state,
+        guesses: [...state.guesses, initialGuess()]
+      };
     case "removeGuess":
-      return { ...state, guesses: state.guesses.filter(g => g.id !== message.id) };
+      return {
+        ...state,
+        guesses: state.guesses.filter(guess => guess.id !== message.id)
+      };
     case "customCandidatesChanged":
-      return { ...state, customCandidates: message.value };
+      return {
+        ...state,
+        customCandidates: message.value
+      };
     case "solving":
-      return { ...state, loading: true, error: "" };
+      return {
+        ...state,
+        loading: true,
+        error: ""
+      };
     case "solved":
-      return { ...state, loading: false, error: "", count: message.count, possibilities: message.possibilities };
+      return {
+        ...state,
+        loading: false,
+        error: "",
+        count: message.count,
+        possibilities: message.possibilities
+      };
     case "failed":
-      return { ...state, loading: false, error: message.error };
+      return {
+        ...state,
+        loading: false,
+        error: message.error
+      };
     case "reset":
-      return init;
+      return initialModel();
     default:
       return state;
   }
@@ -64,68 +131,93 @@ const dispatch = message => {
   view(model);
 };
 
-const nextFeedback = current => {
-  const index = feedbackCycle.indexOf(current);
-  return feedbackCycle[(index + 1) % feedbackCycle.length];
-};
+const responseToMessage = async response => {
+  const payload = await response.json();
 
-const toTokenString = feedback =>
-  feedback.map(item => feedbackLabels[item]).join("");
+  if (!response.ok) {
+    return {
+      type: "failed",
+      error: payload.error || "Unable to solve with that feedback."
+    };
+  }
+
+  return {
+    type: "solved",
+    count: payload.count,
+    possibilities: payload.possibilities
+  };
+};
 
 const solve = async () => {
   dispatch({ type: "solving" });
-
-  const candidates = model.customCandidates
-    .split(/\s|,/)
-    .map(w => w.trim().toLowerCase())
-    .filter(Boolean);
-
-  const body = {
-    guesses: model.guesses.map(g => ({
-      guess: g.guess,
-      feedback: toTokenString(g.feedback)
-    })),
-    candidates: candidates.length > 0 ? candidates : null
-  };
 
   try {
     const response = await fetch("/api/solve", {
       method: "POST",
       headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
+      body: JSON.stringify(solveRequest(model))
     });
 
-    const payload = await response.json();
-
-    if (!response.ok) {
-      dispatch({ type: "failed", error: payload.error || "Unable to solve with that feedback." });
-      return;
-    }
-
-    dispatch({ type: "solved", count: payload.count, possibilities: payload.possibilities });
+    dispatch(await responseToMessage(response));
   } catch {
     dispatch({ type: "failed", error: "The solver API is not reachable." });
   }
 };
 
+const attributeEntries = attributes =>
+  Object.entries(attributes)
+    .filter(([, value]) => value !== null && value !== undefined);
+
+const setAttribute = node => ([key, value]) => {
+  if (key.startsWith("on")) {
+    node.addEventListener(key.slice(2).toLowerCase(), value);
+  } else if (key === "className") {
+    node.className = value;
+  } else {
+    node.setAttribute(key, value);
+  }
+};
+
+const toNode = child =>
+  child instanceof Node ? child : document.createTextNode(child);
+
 const el = (tag, attributes = {}, children = []) => {
   const node = document.createElement(tag);
 
-  Object.entries(attributes).forEach(([key, value]) => {
-    if (key.startsWith("on")) {
-      node.addEventListener(key.slice(2).toLowerCase(), value);
-    } else if (key === "className") {
-      node.className = value;
-    } else if (value !== null && value !== undefined) {
-      node.setAttribute(key, value);
-    }
-  });
-
-  children.forEach(child => {
-    node.append(child instanceof Node ? child : document.createTextNode(child));
-  });
+  attributeEntries(attributes).forEach(setAttribute(node));
+  children.map(toNode).forEach(child => node.append(child));
 
   return node;
+};
+
+const inputSelection = element =>
+  typeof element?.selectionStart === "number" ? element.selectionStart : null;
+
+const focusSnapshot = () => {
+  const active = document.activeElement;
+
+  return {
+    focusKey: active?.dataset?.focusKey,
+    selectionStart: inputSelection(active)
+  };
+};
+
+const restoreFocus = (container, snapshot) => {
+  if (!snapshot.focusKey) {
+    return;
+  }
+
+  const nextActive = container.querySelector(`[data-focus-key="${snapshot.focusKey}"]`);
+
+  if (!nextActive) {
+    return;
+  }
+
+  nextActive.focus();
+
+  if (snapshot.selectionStart !== null && typeof nextActive.setSelectionRange === "function") {
+    nextActive.setSelectionRange(snapshot.selectionStart, snapshot.selectionStart);
+  }
 };
 
 const guessView = (state, guess) =>
@@ -156,9 +248,7 @@ const guessView = (state, guess) =>
 
 const view = state => {
   const app = document.querySelector("#app");
-  const active = document.activeElement;
-  const focusKey = active?.dataset?.focusKey;
-  const selectionStart = typeof active?.selectionStart === "number" ? active.selectionStart : null;
+  const snapshot = focusSnapshot();
 
   app.replaceChildren(
     el("div", { className: "shell" }, [
@@ -196,17 +286,7 @@ const view = state => {
     ])
   );
 
-  if (focusKey) {
-    const nextActive = app.querySelector(`[data-focus-key="${focusKey}"]`);
-
-    if (nextActive) {
-      nextActive.focus();
-
-      if (selectionStart !== null && typeof nextActive.setSelectionRange === "function") {
-        nextActive.setSelectionRange(selectionStart, selectionStart);
-      }
-    }
-  }
+  restoreFocus(app, snapshot);
 };
 
 view(model);
