@@ -23,6 +23,11 @@ let private parse guess feedback =
     | Ok parsed -> parsed
     | Error error -> failwith (explainError error)
 
+let private expectError (expected: SolveError) result =
+    match result with
+    | Ok value -> failwith $"Expected %A{expected}, but got %A{value}."
+    | Error actual -> Assert.Equal(expected, actual)
+
 let private findAnswerList () =
     let rec search directory =
         let candidate = Path.Combine(directory, "WordleSolver", "Data", "answers.txt")
@@ -66,6 +71,37 @@ let ``duplicate letters consume only the available unmatched copies`` () =
     Assert.Equal("GGGGG", score "eerie" "eerie")
     Assert.Equal("BBBBG", score "budge" "eerie")
     Assert.Equal("GBBBG", score "eerie" "eagle")
+
+[<Fact>]
+let ``parser rejects guesses that are not exactly five letters`` () =
+    parseGuessFeedback "four" "BBBBB"
+    |> expectError (InvalidGuessLength "four")
+
+[<Fact>]
+let ``parser rejects feedback that is not exactly five tokens`` () =
+    parseGuessFeedback "trace" "BBBB"
+    |> expectError (InvalidFeedbackLength "BBBB")
+
+[<Fact>]
+let ``parser rejects unrecognized feedback tokens`` () =
+    parseGuessFeedback "trace" "BBZBB"
+    |> expectError (InvalidFeedbackToken 'Z')
+
+[<Fact>]
+let ``parser accepts color and semantic feedback aliases`` () =
+    let parsed = parse "trace" "CPAXG"
+
+    Assert.Equal("trace", parsed.Guess)
+    Assert.Equal<Feedback list>([ Correct; Present; Absent; Absent; Correct ], parsed.Feedback)
+
+[<Fact>]
+let ``solve normalizes filters deduplicates and sorts candidates`` () =
+    let guesses = [ parse "trace" "GGGGG" ]
+    let candidates = [ " trace "; "TRACE"; "traces"; "tr@ce"; "crane"; "Trace" ]
+
+    let possibilities = solve candidates guesses
+
+    Assert.Equal<string list>([ "trace" ], possibilities)
 
 [<Fact>]
 let ``reported budge game includes budge with the default answer list`` () =
