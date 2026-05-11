@@ -46,5 +46,13 @@ jobs:
       - name: Build
         run: dotnet build WordleSolverNew.sln --configuration Release --no-restore
 
+      - name: Validate environment configuration files
+        shell: bash
+        run: |
+          for environment in DEV QA STAGE PROD; do
+            test -f "WordleSolver/appsettings.${environment}.json"
+            test -f "WordleSolver/bin/Release/net10.0/appsettings.${environment}.json"
+          done
+
       - name: Test
         run: dotnet test WordleSolverNew.sln --configuration Release --no-build --verbosity normal

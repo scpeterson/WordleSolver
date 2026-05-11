@@ -14,6 +14,21 @@ dotnet run --project WordleSolver/WordleSolver.fsproj
 
 Then open the URL printed by ASP.NET Core.
 
+## Environments
+
+The app supports four ASP.NET Core environment names:
+
+- `DEV`
+- `QA`
+- `STAGE`
+- `PROD`
+
+Each environment has a matching `WordleSolver/appsettings.{ENV}.json` file. Rider launch profiles are also defined for each environment. From the command line, run a specific environment like this:
+
+```bash
+ASPNETCORE_ENVIRONMENT=QA dotnet run --project WordleSolver/WordleSolver.fsproj
+```
+
 ## Feedback Tokens
 
 The API accepts five feedback tokens per guess:
