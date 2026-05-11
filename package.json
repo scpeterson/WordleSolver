@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "build:client": "cd WordleSolver.Elm && elm make src/Main.elm --optimize --output ../WordleSolver/wwwroot/app.js",
+    "test:client": "cd WordleSolver.Elm && elm-test"
+  },
+  "devDependencies": {
+    "elm": "^0.19.1-6",
+    "elm-test": "^0.19.1-revision16"
+  }
+}

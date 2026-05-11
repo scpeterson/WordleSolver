@@ -8,6 +8,9 @@
 </head>
 <body>
   <main id="app"></main>
-  <script src="/app.js" type="module"></script>
+  <script src="/app.js"></script>
+  <script>
+    Elm.Main.init({ node: document.getElementById("app") });
+  </script>
 </body>
 </html>

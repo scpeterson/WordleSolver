@@ -20,6 +20,10 @@ _ReSharper*/
 bin/
 obj/
 
+# Frontend build output
+node_modules/
+elm-stuff/
+
 # Visual Studio local state
 .vs/
 *.user

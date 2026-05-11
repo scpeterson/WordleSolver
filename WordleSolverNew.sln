@@ -7,6 +7,20 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WordleSolver", "WordleSolve
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "WordleSolver.Tests", "WordleSolver.Tests\WordleSolver.Tests.fsproj", "{83256112-7520-421A-BC62-E75784126651}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend Tooling", "Frontend Tooling", "{34E5B3CB-FB26-448D-BBF2-8C39B7FC40F8}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		package-lock.json = package-lock.json
+		package.json = package.json
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WordleSolver.Elm", "WordleSolver.Elm", "{2DE52855-A2AE-4862-953D-E9A13C8A2DE6}"
+	ProjectSection(SolutionItems) = preProject
+		WordleSolver.Elm\elm.json = WordleSolver.Elm\elm.json
+		WordleSolver.Elm\src\Main.elm = WordleSolver.Elm\src\Main.elm
+		WordleSolver.Elm\tests\MainTests.elm = WordleSolver.Elm\tests\MainTests.elm
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
