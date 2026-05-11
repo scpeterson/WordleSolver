@@ -22,6 +22,24 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22.x
+          cache: npm
+
+      - name: Restore frontend dependencies
+        run: npm ci
+
+      - name: Build Elm client
+        run: npm run build:client
+
+      - name: Test Elm client
+        run: npm run test:client
+
+      - name: Verify generated client is current
+        run: git diff --exit-code -- WordleSolver/wwwroot/app.js
+
       - name: Restore dependencies
         run: dotnet restore WordleSolverNew.sln
 
