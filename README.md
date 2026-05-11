@@ -52,9 +52,15 @@ Example: if the answer is `spine` and the guess is `house`, Wordle feedback is `
 }
 ```
 
-The `candidates` field is optional. When omitted, the project uses `WordleSolver/Data/answers.txt`, sourced from cfreshman's alphabetical original Wordle answer list:
+The `candidates` field is optional. When omitted, the project uses `WordleSolver/Data/answers.txt`.
+
+## Answer List Provenance
+
+`WordleSolver/Data/answers.txt` is checked into the repository so solver behavior is deterministic. It was sourced from cfreshman's alphabetical original Wordle answer list:
 
 https://gist.github.com/cfreshman/a03ef2cba789d8cf00c08f767e0fad7b
+
+This is the original static answer list, not a live feed of the current New York Times curated Wordle answer pool. Do not refresh it automatically on a schedule. If the answer list needs to change, update it manually in a pull request so the behavior change can be reviewed with the tests.
 
 ## Verify
 
