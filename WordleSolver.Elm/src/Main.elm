@@ -3,8 +3,8 @@ module Main exposing (Feedback(..), Guess, Model, Msg(..), enteredGuesses, initi
 import Browser
 import Char
 import Html exposing (Html, button, div, h1, input, label, p, section, span, text, textarea)
-import Html.Attributes exposing (attribute, class, classList, maxlength, placeholder, title, value)
-import Html.Events exposing (onClick, onInput)
+import Html.Attributes exposing (attribute, checked, class, classList, maxlength, placeholder, title, type_, value)
+import Html.Events exposing (onCheck, onClick, onInput)
 import Html.Keyed as Keyed
 import Http
 import Json.Decode as Decode
@@ -32,6 +32,7 @@ type alias Model =
     , customCandidates : String
     , error : String
     , loading : Bool
+    , hardMode : Bool
     , nextId : Int
     }
 
@@ -42,6 +43,7 @@ type Msg
     | AddGuess
     | RemoveGuess Int
     | CustomCandidatesChanged String
+    | HardModeChanged Bool
     | Solve
     | Solved Int (List String)
     | Failed String
@@ -74,6 +76,7 @@ initialModel =
     , customCandidates = ""
     , error = ""
     , loading = False
+    , hardMode = False
     , nextId = 2
     }
 
@@ -128,6 +131,9 @@ update msg model =
 
         CustomCandidatesChanged value ->
             ( { model | customCandidates = value }, Cmd.none )
+
+        HardModeChanged value ->
+            ( { model | hardMode = value }, Cmd.none )
 
         Solve ->
             if List.isEmpty (enteredGuesses model) then
@@ -271,6 +277,7 @@ solveRequestEncoder model =
     in
     Encode.object
         [ ( "guesses", Encode.list guessEncoder (enteredGuesses model) )
+        , ( "hardMode", Encode.bool model.hardMode )
         , ( "candidates"
           , if List.isEmpty candidates then
                 Encode.null
@@ -316,6 +323,15 @@ view model =
                 , button [ class "secondary", onClick Reset ] [ text "Reset" ]
                 ]
             , p [ class "error", attribute "role" "status" ] [ text model.error ]
+            , label [ class "hard-mode" ]
+                [ input
+                    [ type_ "checkbox"
+                    , checked model.hardMode
+                    , onCheck HardModeChanged
+                    ]
+                    []
+                , span [] [ text "Hard Mode" ]
+                ]
             , label [ class "candidate-input" ]
                 [ span [ class "hint" ] [ text "Optional candidate words" ]
                 , textarea

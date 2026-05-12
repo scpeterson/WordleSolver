@@ -143,6 +143,19 @@ h1 {
   color: #b42318;
 }
 
+.hard-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  font-weight: 650;
+}
+
+.hard-mode input {
+  width: 18px;
+  height: 18px;
+}
+
 .candidate-input {
   margin-top: 20px;
 }

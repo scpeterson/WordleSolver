@@ -48,11 +48,14 @@ Example: if the answer is `spine` and the guess is `house`, Wordle feedback is `
   "guesses": [
     { "guess": "house", "feedback": "BBBYG" }
   ],
+  "hardMode": true,
   "candidates": ["spine", "horse", "smile", "style"]
 }
 ```
 
-The `candidates` field is optional. When omitted, the project uses `WordleSolver/Data/answers.txt`.
+The `candidates` and `hardMode` fields are optional. When `candidates` is omitted, the project uses `WordleSolver/Data/answers.txt`.
+
+When `hardMode` is `true`, every guess after the first must use revealed hints from earlier guesses. Green letters must stay in the same position, and revealed green or yellow letters must be included in later guesses.
 
 ## Answer List Provenance
 
