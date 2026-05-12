@@ -101,6 +101,11 @@ h1 {
   cursor: pointer;
 }
 
+.tile.unset {
+  background: var(--line);
+  color: var(--muted);
+}
+
 .tile.correct {
   background: var(--green);
 }
