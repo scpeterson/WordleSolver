@@ -6834,58 +6834,69 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$text(model.L)
 							])),
 						A2(
-						$elm$html$Html$label,
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$class('hard-mode')
+								$elm$html$Html$Attributes$class('solve-options')
 							]),
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$input,
+								$elm$html$Html$label,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$type_('checkbox'),
-										$elm$html$Html$Attributes$checked(model.ae),
-										$elm$html$Html$Events$onCheck($author$project$Main$HardModeChanged)
-									]),
-								_List_Nil),
-								A2(
-								$elm$html$Html$span,
-								_List_Nil,
-								_List_fromArray(
-									[
-										$elm$html$Html$text('Hard Mode')
-									]))
-							])),
-						A2(
-						$elm$html$Html$label,
-						_List_fromArray(
-							[
-								$elm$html$Html$Attributes$class('candidate-input')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$span,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('hint')
+										$elm$html$Html$Attributes$class('hard-mode')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Optional candidate words')
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('checkbox'),
+												$elm$html$Html$Attributes$checked(model.ae),
+												$elm$html$Html$Events$onCheck($author$project$Main$HardModeChanged)
+											]),
+										_List_Nil),
+										A2(
+										$elm$html$Html$span,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Hard Mode')
+											]))
 									])),
 								A2(
-								$elm$html$Html$textarea,
+								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$value(model.ad),
-										A2($elm$html$Html$Attributes$attribute, 'data-focus-key', 'custom-candidates'),
-										$elm$html$Html$Attributes$placeholder('Paste five-letter answers separated by spaces, commas, or new lines.'),
-										$elm$html$Html$Events$onInput($author$project$Main$CustomCandidatesChanged)
+										$elm$html$Html$Attributes$class('candidate-input')
 									]),
-								_List_Nil)
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$label,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('hint'),
+												A2($elm$html$Html$Attributes$attribute, 'for', 'custom-candidates')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Optional candidate words')
+											])),
+										A2(
+										$elm$html$Html$textarea,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$value(model.ad),
+												A2($elm$html$Html$Attributes$attribute, 'id', 'custom-candidates'),
+												A2($elm$html$Html$Attributes$attribute, 'data-focus-key', 'custom-candidates'),
+												$elm$html$Html$Attributes$placeholder('Paste five-letter answers separated by spaces, commas, or new lines.'),
+												$elm$html$Html$Events$onInput($author$project$Main$CustomCandidatesChanged)
+											]),
+										_List_Nil)
+									]))
 							]))
 					])),
 				A2(

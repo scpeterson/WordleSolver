@@ -323,24 +323,27 @@ view model =
                 , button [ class "secondary", onClick Reset ] [ text "Reset" ]
                 ]
             , p [ class "error", attribute "role" "status" ] [ text model.error ]
-            , label [ class "hard-mode" ]
-                [ input
-                    [ type_ "checkbox"
-                    , checked model.hardMode
-                    , onCheck HardModeChanged
+            , div [ class "solve-options" ]
+                [ label [ class "hard-mode" ]
+                    [ input
+                        [ type_ "checkbox"
+                        , checked model.hardMode
+                        , onCheck HardModeChanged
+                        ]
+                        []
+                    , span [] [ text "Hard Mode" ]
                     ]
-                    []
-                , span [] [ text "Hard Mode" ]
-                ]
-            , label [ class "candidate-input" ]
-                [ span [ class "hint" ] [ text "Optional candidate words" ]
-                , textarea
-                    [ value model.customCandidates
-                    , attribute "data-focus-key" "custom-candidates"
-                    , placeholder "Paste five-letter answers separated by spaces, commas, or new lines."
-                    , onInput CustomCandidatesChanged
+                , div [ class "candidate-input" ]
+                    [ label [ class "hint", attribute "for" "custom-candidates" ] [ text "Optional candidate words" ]
+                    , textarea
+                        [ value model.customCandidates
+                        , attribute "id" "custom-candidates"
+                        , attribute "data-focus-key" "custom-candidates"
+                        , placeholder "Paste five-letter answers separated by spaces, commas, or new lines."
+                        , onInput CustomCandidatesChanged
+                        ]
+                        []
                     ]
-                    []
                 ]
             ]
         , section [ class "results" ]
