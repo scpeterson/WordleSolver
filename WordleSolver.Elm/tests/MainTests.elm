@@ -48,6 +48,14 @@ all =
                     |> Main.enteredGuesses
                     |> List.map .guess
                     |> Expect.equal [ "crane" ]
+        , test "HardModeChanged updates the solve request option state" <|
+            \_ ->
+                let
+                    ( model, _ ) =
+                        Main.update (HardModeChanged True) Main.initialModel
+                in
+                model.hardMode
+                    |> Expect.equal True
         ]
 
 

@@ -104,6 +104,28 @@ let ``solve normalizes filters deduplicates and sorts candidates`` () =
     Assert.Equal<string list>([ "trace" ], possibilities)
 
 [<Fact>]
+let ``hard mode requires green letters in subsequent guesses`` () =
+    [ parse "crane" "GBBBB"; parse "sloth" "BBBBB" ]
+    |> validateHardMode
+    |> expectError (HardModeViolation("sloth", "Guess 'sloth' must use 'c' in position 1."))
+
+[<Fact>]
+let ``hard mode requires revealed yellow letters in subsequent guesses`` () =
+    [ parse "crane" "YBBBB"; parse "sloth" "BBBBB" ]
+    |> validateHardMode
+    |> expectError (HardModeViolation("sloth", "Guess 'sloth' must include 'c'."))
+
+[<Fact>]
+let ``hard mode allows subsequent guesses that use revealed hints`` () =
+    let result =
+        [ parse "crane" "GYBBB"; parse "cider" "BBBBB" ]
+        |> validateHardMode
+
+    match result with
+    | Ok guesses -> Assert.Equal(2, guesses.Length)
+    | Error error -> failwith (explainError error)
+
+[<Fact>]
 let ``reported budge game includes budge with the default answer list`` () =
     let guesses =
         [ parse "trace" "BBBBG"

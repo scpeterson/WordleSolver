@@ -30,7 +30,13 @@ let private createClient permitLimit =
 
 let private solveRequest () =
     new StringContent(
-        """{"guesses":[{"guess":"crane","feedback":"BBBBB"}],"candidates":["sloth"]}""",
+        """{"guesses":[{"guess":"crane","feedback":"BBBBB"}],"candidates":["sloth"],"hardMode":false}""",
+        Encoding.UTF8,
+        "application/json")
+
+let private hardModeViolationRequest () =
+    new StringContent(
+        """{"guesses":[{"guess":"crane","feedback":"GBBBB"},{"guess":"sloth","feedback":"BBBBB"}],"candidates":["sloth"],"hardMode":true}""",
         Encoding.UTF8,
         "application/json")
 
@@ -52,6 +58,20 @@ let ``solve endpoint returns too many requests after configured limit`` () =
 
         let body = third.Content.ReadAsStringAsync().GetAwaiter().GetResult()
         Assert.Contains("Too many solve requests", body)
+    finally
+        app.DisposeAsync().AsTask().GetAwaiter().GetResult()
+
+[<Fact>]
+let ``solve endpoint rejects hard mode violations`` () =
+    let client, app = createClient 30
+
+    try
+        use response = client.PostAsync("/api/solve", hardModeViolationRequest()).GetAwaiter().GetResult()
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode)
+
+        let body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult()
+        Assert.Contains("must use 'c' in position 1", body)
     finally
         app.DisposeAsync().AsTask().GetAwaiter().GetResult()
 

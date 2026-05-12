@@ -15,7 +15,8 @@ type GuessRequest =
 
 type SolveRequest =
     { guesses: GuessRequest array
-      candidates: string array option }
+      candidates: string array option
+      hardMode: bool }
 
 type SolveResponse =
     { count: int
@@ -57,6 +58,11 @@ let private parseRequest (request: SolveRequest) =
                 | Ok parsed, Ok guess -> Ok(guess :: parsed))
             (Ok [])
         |> Result.map List.rev
+        |> Result.bind (fun guesses ->
+            if request.hardMode then
+                validateHardMode guesses
+            else
+                Ok guesses)
 
 let configureServices (builder: WebApplicationBuilder) =
     let rateLimit =

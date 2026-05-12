@@ -19,6 +19,7 @@ module Domain =
         | InvalidGuessLength of string
         | InvalidFeedbackLength of string
         | InvalidFeedbackToken of char
+        | HardModeViolation of guess: string * requirement: string
         | NoGuesses
 
     let private normalizeWord (word: string) =
@@ -104,6 +105,78 @@ module Domain =
         |> Result.map ((=) guessFeedback.Feedback)
         |> Result.defaultValue false
 
+    let private positiveLetterCounts guessFeedback =
+        guessFeedback.Feedback
+        |> List.zip (guessFeedback.Guess |> Seq.toList)
+        |> List.choose (function
+            | letter, Correct
+            | letter, Present -> Some letter
+            | _, Absent -> None)
+        |> List.countBy id
+
+    let private mergeRequiredCounts current next =
+        next
+        |> List.fold
+            (fun required (letter, count) ->
+                let existing = required |> Map.tryFind letter |> Option.defaultValue 0
+                required |> Map.add letter (max existing count))
+            current
+
+    let private hardModeRequirements previousGuesses =
+        let greenPositions =
+            previousGuesses
+            |> List.collect (fun guessFeedback ->
+                guessFeedback.Feedback
+                |> List.mapi (fun index feedback -> index, feedback)
+                |> List.choose (function
+                    | index, Correct -> Some(index, guessFeedback.Guess[index])
+                    | _ -> None))
+
+        let requiredCounts =
+            previousGuesses
+            |> List.map positiveLetterCounts
+            |> List.fold mergeRequiredCounts Map.empty
+
+        greenPositions, requiredCounts
+
+    let private letterCount letter guess =
+        guess
+        |> Seq.filter ((=) letter)
+        |> Seq.length
+
+    let private hardModeViolation previousGuesses currentGuess =
+        let greenPositions, requiredCounts = hardModeRequirements previousGuesses
+
+        let missingGreen =
+            greenPositions
+            |> List.tryFind (fun (index, letter) -> currentGuess.Guess[index] <> letter)
+
+        match missingGreen with
+        | Some(index, letter) -> Some $"Guess '{currentGuess.Guess}' must use '{letter}' in position {index + 1}."
+        | None ->
+            requiredCounts
+            |> Map.toList
+            |> List.tryFind (fun (letter, count) -> letterCount letter currentGuess.Guess < count)
+            |> Option.map (fun (letter, count) ->
+                if count = 1 then
+                    $"Guess '{currentGuess.Guess}' must include '{letter}'."
+                else
+                    $"Guess '{currentGuess.Guess}' must include {count} copies of '{letter}'.")
+
+    let validateHardMode guesses =
+        let rec validate previous remaining =
+            match remaining with
+            | [] -> Ok guesses
+            | current :: rest ->
+                match hardModeViolation previous current with
+                | Some violation -> Error(HardModeViolation(current.Guess, violation))
+                | None -> validate (previous @ [ current ]) rest
+
+        match guesses with
+        | []
+        | [ _ ] -> Ok guesses
+        | first :: rest -> validate [ first ] rest
+
     let solve candidates guesses =
         guesses
         |> List.fold
@@ -117,4 +190,5 @@ module Domain =
         | InvalidGuessLength value -> $"'{value}' must be exactly five letters."
         | InvalidFeedbackLength value -> $"Feedback '{value}' must contain exactly five tokens."
         | InvalidFeedbackToken value -> $"Feedback token '{value}' is not recognized. Use G/Y/B, C/P/A, or X for absent."
+        | HardModeViolation(_, requirement) -> requirement
         | NoGuesses -> "Enter at least one guess with feedback."
