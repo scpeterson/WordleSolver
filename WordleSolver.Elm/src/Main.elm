@@ -250,7 +250,7 @@ decodeSolveResponse response =
 
         Http.BadStatus_ _ body ->
             Decode.decodeString errorResponseDecoder body
-                |> Result.withDefault "Unable to solve with that feedback."
+                |> Result.withDefault "Unable to solve right now."
                 |> Err
 
         Http.BadUrl_ _ ->

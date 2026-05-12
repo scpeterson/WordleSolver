@@ -1,7 +1,11 @@
 open System
 open System.IO
+open System.Threading.RateLimiting
 open Microsoft.AspNetCore.Builder
 open Microsoft.AspNetCore.Http
+open Microsoft.AspNetCore.RateLimiting
+open Microsoft.Extensions.Configuration
+open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open WordleSolver.Domain
 
@@ -16,6 +20,14 @@ type SolveRequest =
 type SolveResponse =
     { count: int
       possibilities: string array }
+
+type RateLimitOptions =
+    { PermitLimit: int
+      WindowSeconds: int }
+
+let private defaultRateLimitOptions =
+    { PermitLimit = 30
+      WindowSeconds = 60 }
 
 let private answerListPath =
     Path.Combine(AppContext.BaseDirectory, "Data", "answers.txt")
@@ -49,10 +61,42 @@ let private parseRequest (request: SolveRequest) =
 [<EntryPoint>]
 let main args =
     let builder = WebApplication.CreateBuilder(args)
+
+    let rateLimit =
+        builder.Configuration.GetSection("RateLimiting:Solve").Get<RateLimitOptions>()
+        |> Option.ofObj
+        |> Option.defaultValue defaultRateLimitOptions
+
+    builder.Services.AddRateLimiter(fun options ->
+        options.RejectionStatusCode <- StatusCodes.Status429TooManyRequests
+
+        options.OnRejected <-
+            Func<OnRejectedContext, Threading.CancellationToken, Threading.Tasks.ValueTask>(fun context cancellationToken ->
+                context.HttpContext.Response.ContentType <- "application/json"
+                context.HttpContext.Response.WriteAsJsonAsync({| error = "Too many solve requests. Please wait a moment and try again." |}, cancellationToken)
+                |> Threading.Tasks.ValueTask)
+
+        options.AddPolicy("solve", fun context ->
+            let partitionKey =
+                match context.Connection.RemoteIpAddress with
+                | null -> "unknown"
+                | address -> address.ToString()
+
+            RateLimitPartition.GetFixedWindowLimiter(partitionKey, fun _ ->
+                FixedWindowRateLimiterOptions(
+                    PermitLimit = rateLimit.PermitLimit,
+                    Window = TimeSpan.FromSeconds(float rateLimit.WindowSeconds),
+                    QueueLimit = 0,
+                    QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                    AutoReplenishment = true)))
+        |> ignore)
+    |> ignore
+
     let app = builder.Build()
 
     app.UseDefaultFiles() |> ignore
     app.UseStaticFiles() |> ignore
+    app.UseRateLimiter() |> ignore
 
     app.MapGet("/api/answers", Func<SolveResponse>(fun () ->
         let possibilities = defaultCandidates |> List.filter isFiveLetterWord |> List.distinct |> List.sort |> List.toArray
@@ -75,6 +119,7 @@ let main args =
             Results.Ok
                 { count = possibilities.Length
                   possibilities = possibilities }))
+        .RequireRateLimiting("solve")
     |> ignore
 
     app.Run()

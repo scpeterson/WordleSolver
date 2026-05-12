@@ -5473,7 +5473,7 @@ var $author$project$Main$decodeSolveResponse = function (response) {
 			return $elm$core$Result$Err(
 				A2(
 					$elm$core$Result$withDefault,
-					'Unable to solve with that feedback.',
+					'Unable to solve right now.',
 					A2($elm$json$Json$Decode$decodeString, $author$project$Main$errorResponseDecoder, body)));
 		case 0:
 			return $elm$core$Result$Err('The solver API is not reachable.');
