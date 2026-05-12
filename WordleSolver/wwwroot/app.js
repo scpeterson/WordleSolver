@@ -2719,7 +2719,7 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		H: func(record.H),
+		L: func(record.L),
 		aF: record.aF,
 		aC: record.aC
 	}
@@ -2989,7 +2989,7 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.H;
+		var message = !tag ? value : tag < 3 ? value.a : value.L;
 		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.aF;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
@@ -5328,7 +5328,6 @@ var $elm$core$Task$perform = F2(
 			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$element = _Browser_element;
-var $author$project$Main$Absent = 0;
 var $elm$core$List$repeatHelp = F3(
 	function (result, n, value) {
 		repeatHelp:
@@ -5352,21 +5351,21 @@ var $elm$core$List$repeat = F2(
 	});
 var $author$project$Main$initialGuess = function (id) {
 	return {
-		V: A2($elm$core$List$repeat, 5, 0),
-		W: '',
-		C: id
+		D: A2($elm$core$List$repeat, 5, $elm$core$Maybe$Nothing),
+		l: '',
+		E: id
 	};
 };
 var $author$project$Main$initialModel = {
 	an: 0,
-	ad: '',
-	L: '',
-	q: _List_fromArray(
+	ae: '',
+	I: '',
+	n: _List_fromArray(
 		[
 			$author$project$Main$initialGuess(1)
 		]),
-	ae: false,
-	O: false,
+	X: false,
+	J: false,
 	ah: 2,
 	aq: _List_Nil
 };
@@ -5374,12 +5373,54 @@ var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
-var $elm$core$String$filter = _String_filter;
-var $author$project$Main$cleanGuess = function (value) {
+var $elm$core$List$any = F2(
+	function (isOkay, list) {
+		any:
+		while (true) {
+			if (!list.b) {
+				return false;
+			} else {
+				var x = list.a;
+				var xs = list.b;
+				if (isOkay(x)) {
+					return true;
+				} else {
+					var $temp$isOkay = isOkay,
+						$temp$list = xs;
+					isOkay = $temp$isOkay;
+					list = $temp$list;
+					continue any;
+				}
+			}
+		}
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$all = F2(
+	function (isOkay, list) {
+		return !A2(
+			$elm$core$List$any,
+			A2($elm$core$Basics$composeL, $elm$core$Basics$not, isOkay),
+			list);
+	});
+var $author$project$Main$feedbackComplete = function (guess) {
 	return A2(
-		$elm$core$String$filter,
-		$elm$core$Char$isAlpha,
-		A2($elm$core$String$left, 5, value));
+		$elm$core$List$all,
+		function (feedback) {
+			if (!feedback.$) {
+				return true;
+			} else {
+				return false;
+			}
+		},
+		guess.D);
+};
+var $author$project$Main$guessComplete = function (guess) {
+	return ($elm$core$String$length(guess.l) === 5) && $author$project$Main$feedbackComplete(guess);
 };
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -5392,14 +5433,367 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
-var $elm$core$Basics$not = _Basics_not;
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$String$foldr = _String_foldr;
+var $elm$core$String$toList = function (string) {
+	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
+};
+var $author$project$Main$charAt = F2(
+	function (index, word) {
+		return $elm$core$List$head(
+			A2(
+				$elm$core$List$drop,
+				index,
+				$elm$core$String$toList(word)));
+	});
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
+var $elm$core$List$maybeCons = F3(
+	function (f, mx, xs) {
+		var _v0 = f(mx);
+		if (!_v0.$) {
+			var x = _v0.a;
+			return A2($elm$core$List$cons, x, xs);
+		} else {
+			return xs;
+		}
+	});
+var $elm$core$List$filterMap = F2(
+	function (f, xs) {
+		return A3(
+			$elm$core$List$foldr,
+			$elm$core$List$maybeCons(f),
+			_List_Nil,
+			xs);
+	});
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Tuple$pair = F2(
+	function (a, b) {
+		return _Utils_Tuple2(a, b);
+	});
+var $author$project$Main$greenLetters = function (guess) {
+	return A2(
+		$elm$core$List$filterMap,
+		function (_v0) {
+			var index = _v0.a;
+			var _v1 = _v0.b;
+			var letter = _v1.a;
+			var feedback = _v1.b;
+			if ((!feedback.$) && (feedback.a === 2)) {
+				var _v3 = feedback.a;
+				return $elm$core$Maybe$Just(
+					_Utils_Tuple2(index, letter));
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		},
+		A2(
+			$elm$core$List$indexedMap,
+			$elm$core$Tuple$pair,
+			A3(
+				$elm$core$List$map2,
+				$elm$core$Tuple$pair,
+				$elm$core$String$toList(guess.l),
+				guess.D)));
+};
+var $author$project$Main$letterCount = F2(
+	function (letter, word) {
+		return $elm$core$List$length(
+			A2(
+				$elm$core$List$filter,
+				$elm$core$Basics$eq(letter),
+				$elm$core$String$toList(word)));
+	});
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Main$mergeRequiredCount = F3(
+	function (letter, count, counts) {
+		if (!counts.b) {
+			return _List_fromArray(
+				[
+					_Utils_Tuple2(letter, count)
+				]);
+		} else {
+			var _v1 = counts.a;
+			var currentLetter = _v1.a;
+			var currentCount = _v1.b;
+			var rest = counts.b;
+			return _Utils_eq(currentLetter, letter) ? A2(
+				$elm$core$List$cons,
+				_Utils_Tuple2(
+					currentLetter,
+					A2($elm$core$Basics$max, currentCount, count)),
+				rest) : A2(
+				$elm$core$List$cons,
+				_Utils_Tuple2(currentLetter, currentCount),
+				A3($author$project$Main$mergeRequiredCount, letter, count, rest));
+		}
+	});
+var $author$project$Main$mergeRequiredCounts = F2(
+	function (next, current) {
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, counts) {
+					var letter = _v0.a;
+					var count = _v0.b;
+					return A3($author$project$Main$mergeRequiredCount, letter, count, counts);
+				}),
+			current,
+			next);
+	});
+var $author$project$Main$positiveLetters = function (guess) {
+	return A2(
+		$elm$core$List$filterMap,
+		function (_v0) {
+			var letter = _v0.a;
+			var feedback = _v0.b;
+			if (!feedback.$) {
+				switch (feedback.a) {
+					case 2:
+						var _v2 = feedback.a;
+						return $elm$core$Maybe$Just(letter);
+					case 1:
+						var _v3 = feedback.a;
+						return $elm$core$Maybe$Just(letter);
+					default:
+						var _v4 = feedback.a;
+						return $elm$core$Maybe$Nothing;
+				}
+			} else {
+				return $elm$core$Maybe$Nothing;
+			}
+		},
+		A3(
+			$elm$core$List$map2,
+			$elm$core$Tuple$pair,
+			$elm$core$String$toList(guess.l),
+			guess.D));
+};
+var $author$project$Main$incrementLetterCount = F2(
+	function (letter, counts) {
+		if (!counts.b) {
+			return _List_fromArray(
+				[
+					_Utils_Tuple2(letter, 1)
+				]);
+		} else {
+			var _v1 = counts.a;
+			var currentLetter = _v1.a;
+			var count = _v1.b;
+			var rest = counts.b;
+			return _Utils_eq(currentLetter, letter) ? A2(
+				$elm$core$List$cons,
+				_Utils_Tuple2(currentLetter, count + 1),
+				rest) : A2(
+				$elm$core$List$cons,
+				_Utils_Tuple2(currentLetter, count),
+				A2($author$project$Main$incrementLetterCount, letter, rest));
+		}
+	});
+var $author$project$Main$requiredLetterCounts = function (letters) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (letter, counts) {
+				return A2($author$project$Main$incrementLetterCount, letter, counts);
+			}),
+		_List_Nil,
+		letters);
+};
+var $author$project$Main$guessViolation = F2(
+	function (previousGuesses, currentGuess) {
+		var requiredCounts = A3(
+			$elm$core$List$foldl,
+			$author$project$Main$mergeRequiredCounts,
+			_List_Nil,
+			A2(
+				$elm$core$List$map,
+				A2($elm$core$Basics$composeR, $author$project$Main$positiveLetters, $author$project$Main$requiredLetterCounts),
+				previousGuesses));
+		var greenPositions = A2($elm$core$List$concatMap, $author$project$Main$greenLetters, previousGuesses);
+		var missingGreen = $elm$core$List$head(
+			A2(
+				$elm$core$List$filterMap,
+				function (_v4) {
+					var index = _v4.a;
+					var letter = _v4.b;
+					return _Utils_eq(
+						A2($author$project$Main$charAt, index, currentGuess.l),
+						$elm$core$Maybe$Just(letter)) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+						_Utils_Tuple2(index, letter));
+				},
+				greenPositions));
+		if (!missingGreen.$) {
+			var _v1 = missingGreen.a;
+			var index = _v1.a;
+			var letter = _v1.b;
+			return $elm$core$Maybe$Just(
+				'Guess \'' + (currentGuess.l + ('\' must use \'' + ($elm$core$String$fromChar(letter) + ('\' in position ' + ($elm$core$String$fromInt(index + 1) + '.'))))));
+		} else {
+			return A2(
+				$elm$core$Maybe$map,
+				function (_v3) {
+					var letter = _v3.a;
+					var count = _v3.b;
+					return (count === 1) ? ('Guess \'' + (currentGuess.l + ('\' must include \'' + ($elm$core$String$fromChar(letter) + '\'.')))) : ('Guess \'' + (currentGuess.l + ('\' must include ' + ($elm$core$String$fromInt(count) + (' copies of \'' + ($elm$core$String$fromChar(letter) + '\'.'))))));
+				},
+				$elm$core$List$head(
+					A2(
+						$elm$core$List$filter,
+						function (_v2) {
+							var letter = _v2.a;
+							var count = _v2.b;
+							return _Utils_cmp(
+								A2($author$project$Main$letterCount, letter, currentGuess.l),
+								count) < 0;
+						},
+						requiredCounts)));
+		}
+	});
+var $author$project$Main$hardModeViolation = function (guesses) {
+	var validate = F2(
+		function (previous, remaining) {
+			validate:
+			while (true) {
+				if (!remaining.b) {
+					return $elm$core$Maybe$Nothing;
+				} else {
+					var current = remaining.a;
+					var rest = remaining.b;
+					var _v1 = A2($author$project$Main$guessViolation, previous, current);
+					if (!_v1.$) {
+						var violation = _v1.a;
+						return $elm$core$Maybe$Just(violation);
+					} else {
+						var $temp$previous = _Utils_ap(
+							previous,
+							_List_fromArray(
+								[current])),
+							$temp$remaining = rest;
+						previous = $temp$previous;
+						remaining = $temp$remaining;
+						continue validate;
+					}
+				}
+			}
+		});
+	if (!guesses.b) {
+		return $elm$core$Maybe$Nothing;
+	} else {
+		if (!guesses.b.b) {
+			return $elm$core$Maybe$Nothing;
+		} else {
+			var first = guesses.a;
+			var rest = guesses.b;
+			return A2(
+				validate,
+				_List_fromArray(
+					[first]),
+				rest);
+		}
+	}
+};
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (!maybe.$) {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$Main$hardModeError = function (model) {
+	return model.X ? A2(
+		$elm$core$Maybe$withDefault,
+		'',
+		$author$project$Main$hardModeViolation(
+			A2(
+				$elm$core$List$filter,
+				function (guess) {
+					return ($elm$core$String$length(guess.l) === 5) && $author$project$Main$feedbackComplete(guess);
+				},
+				model.n))) : '';
+};
+var $author$project$Main$canAddGuess = function (model) {
+	return A2($elm$core$List$all, $author$project$Main$guessComplete, model.n) && $elm$core$String$isEmpty(
+		$author$project$Main$hardModeError(model));
+};
+var $elm$core$String$filter = _String_filter;
+var $elm$core$String$toLower = _String_toLower;
+var $author$project$Main$cleanGuess = function (value) {
+	return $elm$core$String$toLower(
+		A2(
+			$elm$core$String$filter,
+			$elm$core$Char$isAlpha,
+			A2($elm$core$String$left, 5, value)));
+};
 var $author$project$Main$enteredGuesses = function (model) {
 	return A2(
 		$elm$core$List$filter,
 		function (guess) {
-			return !$elm$core$String$isEmpty(guess.W);
+			return !$elm$core$String$isEmpty(guess.l);
 		},
-		model.q);
+		model.n);
 };
 var $elm$core$List$isEmpty = function (xs) {
 	if (!xs.b) {
@@ -5409,16 +5803,24 @@ var $elm$core$List$isEmpty = function (xs) {
 	}
 };
 var $elm$core$Basics$neq = _Utils_notEqual;
+var $author$project$Main$Absent = 0;
 var $author$project$Main$Correct = 2;
 var $author$project$Main$Present = 1;
 var $author$project$Main$nextFeedback = function (feedback) {
-	switch (feedback) {
-		case 0:
-			return 1;
-		case 1:
-			return 2;
-		default:
-			return 0;
+	if (feedback.$ === 1) {
+		return $elm$core$Maybe$Just(0);
+	} else {
+		switch (feedback.a) {
+			case 0:
+				var _v1 = feedback.a;
+				return $elm$core$Maybe$Just(1);
+			case 1:
+				var _v2 = feedback.a;
+				return $elm$core$Maybe$Just(2);
+			default:
+				var _v3 = feedback.a;
+				return $elm$core$Maybe$Just(0);
+		}
 	}
 };
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
@@ -5438,10 +5840,6 @@ var $elm$core$Result$mapError = F2(
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$list = _Json_decodeList;
-var $elm$core$Tuple$pair = F2(
-	function (a, b) {
-		return _Utils_Tuple2(a, b);
-	});
 var $author$project$Main$solveResponseDecoder = A3(
 	$elm$json$Json$Decode$map2,
 	$elm$core$Tuple$pair,
@@ -6026,11 +6424,6 @@ var $elm$core$Dict$update = F3(
 			return A2($elm$core$Dict$remove, targetKey, dictionary);
 		}
 	});
-var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
 var $elm$http$Http$expectStringResponse = F2(
 	function (toMsg, toResult) {
 		return A3(
@@ -6125,24 +6518,6 @@ var $elm$http$Http$onEffects = F4(
 					A2($elm$http$Http$State, reqs, subs));
 			},
 			A3($elm$http$Http$updateReqs, router, cmds, state.bf));
-	});
-var $elm$core$List$maybeCons = F3(
-	function (f, mx, xs) {
-		var _v0 = f(mx);
-		if (!_v0.$) {
-			var x = _v0.a;
-			return A2($elm$core$List$cons, x, xs);
-		} else {
-			return xs;
-		}
-	});
-var $elm$core$List$filterMap = F2(
-	function (f, xs) {
-		return A3(
-			$elm$core$List$foldr,
-			$elm$core$List$maybeCons(f),
-			_List_Nil,
-			xs);
 	});
 var $elm$http$Http$maybeSend = F4(
 	function (router, desiredTracker, progress, _v0) {
@@ -6269,12 +6644,15 @@ var $author$project$Main$guessEncoder = function (guess) {
 			[
 				_Utils_Tuple2(
 				'guess',
-				$elm$json$Json$Encode$string(guess.W)),
+				$elm$json$Json$Encode$string(guess.l)),
 				_Utils_Tuple2(
 				'feedback',
 				$elm$json$Json$Encode$string(
 					$elm$core$String$concat(
-						A2($elm$core$List$map, $author$project$Main$feedbackLabel, guess.V))))
+						A2(
+							$elm$core$List$map,
+							$author$project$Main$feedbackLabel,
+							A2($elm$core$List$filterMap, $elm$core$Basics$identity, guess.D)))))
 			]));
 };
 var $elm$json$Json$Encode$list = F2(
@@ -6287,28 +6665,6 @@ var $elm$json$Json$Encode$list = F2(
 				entries));
 	});
 var $elm$json$Json$Encode$null = _Json_encodeNull;
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
-	});
-var $elm$core$List$append = F2(
-	function (xs, ys) {
-		if (!ys.b) {
-			return xs;
-		} else {
-			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
-		}
-	});
-var $elm$core$List$concat = function (lists) {
-	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
-};
-var $elm$core$List$concatMap = F2(
-	function (f, list) {
-		return $elm$core$List$concat(
-			A2($elm$core$List$map, f, list));
-	});
-var $elm$core$String$toLower = _String_toLower;
 var $elm$core$String$trim = _String_trim;
 var $elm$core$String$words = _String_words;
 var $author$project$Main$parseCandidates = function (value) {
@@ -6324,7 +6680,7 @@ var $author$project$Main$parseCandidates = function (value) {
 				A2($elm$core$String$split, ',', value))));
 };
 var $author$project$Main$solveRequestEncoder = function (model) {
-	var candidates = $author$project$Main$parseCandidates(model.ad);
+	var candidates = $author$project$Main$parseCandidates(model.ae);
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
 			[
@@ -6336,7 +6692,7 @@ var $author$project$Main$solveRequestEncoder = function (model) {
 					$author$project$Main$enteredGuesses(model))),
 				_Utils_Tuple2(
 				'hardMode',
-				$elm$json$Json$Encode$bool(model.ae)),
+				$elm$json$Json$Encode$bool(model.X)),
 				_Utils_Tuple2(
 				'candidates',
 				$elm$core$List$isEmpty(candidates) ? $elm$json$Json$Encode$null : A2($elm$json$Json$Encode$list, $elm$json$Json$Encode$string, candidates))
@@ -6366,10 +6722,31 @@ var $author$project$Main$updateGuess = F3(
 		return A2(
 			$elm$core$List$map,
 			function (guess) {
-				return _Utils_eq(guess.C, id) ? transform(guess) : guess;
+				return _Utils_eq(guess.E, id) ? transform(guess) : guess;
 			},
 			guesses);
 	});
+var $author$project$Main$guessInputError = function (model) {
+	var entered = $author$project$Main$enteredGuesses(model);
+	return A2(
+		$elm$core$List$any,
+		function (guess) {
+			return $elm$core$String$length(guess.l) !== 5;
+		},
+		entered) ? $elm$core$Maybe$Just('Enter five letters for each guess.') : (A2(
+		$elm$core$List$any,
+		A2($elm$core$Basics$composeL, $elm$core$Basics$not, $author$project$Main$feedbackComplete),
+		entered) ? $elm$core$Maybe$Just('Select feedback for each entered guess.') : $elm$core$Maybe$Nothing);
+};
+var $author$project$Main$validationError = function (model) {
+	var _v0 = $author$project$Main$guessInputError(model);
+	if (!_v0.$) {
+		var error = _v0.a;
+		return error;
+	} else {
+		return $author$project$Main$hardModeError(model);
+	}
+};
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -6380,17 +6757,17 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							q: A3(
+							n: A3(
 								$author$project$Main$updateGuess,
 								id,
 								function (guess) {
 									return _Utils_update(
 										guess,
 										{
-											W: $author$project$Main$cleanGuess(newGuess)
+											l: $author$project$Main$cleanGuess(newGuess)
 										});
 								},
-								model.q)
+								model.n)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 1:
@@ -6400,45 +6777,45 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							q: A3(
+							n: A3(
 								$author$project$Main$updateGuess,
 								id,
 								function (guess) {
 									return _Utils_update(
 										guess,
 										{
-											V: A3($author$project$Main$updateFeedbackAt, index, $author$project$Main$nextFeedback, guess.V)
+											D: A3($author$project$Main$updateFeedbackAt, index, $author$project$Main$nextFeedback, guess.D)
 										});
 								},
-								model.q)
+								model.n)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 2:
-				return _Utils_Tuple2(
+				return $author$project$Main$canAddGuess(model) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							q: _Utils_ap(
-								model.q,
+							n: _Utils_ap(
+								model.n,
 								_List_fromArray(
 									[
 										$author$project$Main$initialGuess(model.ah)
 									])),
 							ah: model.ah + 1
 						}),
-					$elm$core$Platform$Cmd$none);
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 3:
 				var id = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							q: A2(
+							n: A2(
 								$elm$core$List$filter,
 								function (guess) {
-									return !_Utils_eq(guess.C, id);
+									return !_Utils_eq(guess.E, id);
 								},
-								model.q)
+								model.n)
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 4:
@@ -6446,40 +6823,45 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ad: value}),
+						{ae: value}),
 					$elm$core$Platform$Cmd$none);
 			case 5:
 				var value = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ae: value}),
+						{X: value}),
 					$elm$core$Platform$Cmd$none);
 			case 6:
-				return $elm$core$List$isEmpty(
+				var currentValidationError = $author$project$Main$validationError(model);
+				return (!$elm$core$String$isEmpty(currentValidationError)) ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{I: currentValidationError, J: false}),
+					$elm$core$Platform$Cmd$none) : ($elm$core$List$isEmpty(
 					$author$project$Main$enteredGuesses(model)) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{L: 'Enter at least one guess with feedback.', O: false}),
+						{I: 'Enter at least one guess with feedback.', J: false}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{L: '', O: true}),
-					$author$project$Main$solve(model));
+						{I: '', J: true}),
+					$author$project$Main$solve(model)));
 			case 7:
 				var count = msg.a;
 				var possibilities = msg.b;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{an: count, L: '', O: false, aq: possibilities}),
+						{an: count, I: '', J: false, aq: possibilities}),
 					$elm$core$Platform$Cmd$none);
 			case 8:
 				var error = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{L: error, O: false}),
+						{I: error, J: false}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2($author$project$Main$initialModel, $elm$core$Platform$Cmd$none);
@@ -6519,6 +6901,7 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$GuessChanged = F2(
 	function (a, b) {
@@ -6546,14 +6929,27 @@ var $elm$html$Html$Attributes$classList = function (classes) {
 				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
 };
 var $author$project$Main$feedbackClass = function (feedback) {
-	switch (feedback) {
-		case 0:
-			return 'absent';
-		case 1:
-			return 'present';
-		default:
-			return 'correct';
+	if (feedback.$ === 1) {
+		return 'unset';
+	} else {
+		switch (feedback.a) {
+			case 0:
+				var _v1 = feedback.a;
+				return 'absent';
+			case 1:
+				var _v2 = feedback.a;
+				return 'present';
+			default:
+				var _v3 = feedback.a;
+				return 'correct';
+		}
 	}
+};
+var $author$project$Main$feedbackValueLabel = function (feedback) {
+	return A2(
+		$elm$core$Maybe$withDefault,
+		'',
+		A2($elm$core$Maybe$map, $author$project$Main$feedbackLabel, feedback));
 };
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
 	return {$: 0, a: a};
@@ -6600,7 +6996,7 @@ var $author$project$Main$feedbackButton = F3(
 			_List_fromArray(
 				[
 					$elm$html$Html$text(
-					$author$project$Main$feedbackLabel(feedback))
+					$author$project$Main$feedbackValueLabel(feedback))
 				]));
 	});
 var $elm$html$Html$input = _VirtualDom_node('input');
@@ -6660,16 +7056,16 @@ var $author$project$Main$guessView = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$class('word-input'),
-							$elm$html$Html$Attributes$value(guess.W),
+							$elm$html$Html$Attributes$value(guess.l),
 							$elm$html$Html$Attributes$maxlength(5),
 							$elm$html$Html$Attributes$placeholder('GUESS'),
 							A2(
 							$elm$html$Html$Attributes$attribute,
 							'data-focus-key',
-							'guess-' + $elm$core$String$fromInt(guess.C)),
+							'guess-' + $elm$core$String$fromInt(guess.E)),
 							A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Guess'),
 							$elm$html$Html$Events$onInput(
-							$author$project$Main$GuessChanged(guess.C))
+							$author$project$Main$GuessChanged(guess.E))
 						]),
 					_List_Nil),
 					A2(
@@ -6680,15 +7076,15 @@ var $author$project$Main$guessView = F2(
 						]),
 					A2(
 						$elm$core$List$indexedMap,
-						$author$project$Main$feedbackButton(guess.C),
-						guess.V)),
-					($elm$core$List$length(model.q) > 1) ? A2(
+						$author$project$Main$feedbackButton(guess.E),
+						guess.D)),
+					($elm$core$List$length(model.n) > 1) ? A2(
 					$elm$html$Html$button,
 					_List_fromArray(
 						[
 							$elm$html$Html$Attributes$class('remove'),
 							$elm$html$Html$Events$onClick(
-							$author$project$Main$RemoveGuess(guess.C))
+							$author$project$Main$RemoveGuess(guess.E))
 						]),
 					_List_fromArray(
 						[
@@ -6731,6 +7127,9 @@ var $author$project$Main$wordView = function (word) {
 			]));
 };
 var $author$project$Main$view = function (model) {
+	var currentValidationError = $author$project$Main$validationError(model);
+	var visibleError = $elm$core$String$isEmpty(currentValidationError) ? model.I : currentValidationError;
+	var addGuessDisabled = !$author$project$Main$canAddGuess(model);
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
@@ -6775,10 +7174,10 @@ var $author$project$Main$view = function (model) {
 							$elm$core$List$map,
 							function (guess) {
 								return _Utils_Tuple2(
-									$elm$core$String$fromInt(guess.C),
+									$elm$core$String$fromInt(guess.E),
 									A2($author$project$Main$guessView, model, guess));
 							},
-							model.q)),
+							model.n)),
 						A2(
 						$elm$html$Html$div,
 						_List_fromArray(
@@ -6792,18 +7191,21 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('primary'),
+										$elm$html$Html$Attributes$disabled(
+										!$elm$core$String$isEmpty(currentValidationError)),
 										$elm$html$Html$Events$onClick($author$project$Main$Solve)
 									]),
 								_List_fromArray(
 									[
 										$elm$html$Html$text(
-										model.O ? 'Solving...' : 'Solve')
+										model.J ? 'Solving...' : 'Solve')
 									])),
 								A2(
 								$elm$html$Html$button,
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('secondary'),
+										$elm$html$Html$Attributes$disabled(addGuessDisabled),
 										$elm$html$Html$Events$onClick($author$project$Main$AddGuess)
 									]),
 								_List_fromArray(
@@ -6831,7 +7233,7 @@ var $author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text(model.L)
+								$elm$html$Html$text(visibleError)
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -6854,7 +7256,7 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$Attributes$type_('checkbox'),
-												$elm$html$Html$Attributes$checked(model.ae),
+												$elm$html$Html$Attributes$checked(model.X),
 												$elm$html$Html$Events$onCheck($author$project$Main$HardModeChanged)
 											]),
 										_List_Nil),
@@ -6889,7 +7291,7 @@ var $author$project$Main$view = function (model) {
 										$elm$html$Html$textarea,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$value(model.ad),
+												$elm$html$Html$Attributes$value(model.ae),
 												A2($elm$html$Html$Attributes$attribute, 'id', 'custom-candidates'),
 												A2($elm$html$Html$Attributes$attribute, 'data-focus-key', 'custom-candidates'),
 												$elm$html$Html$Attributes$placeholder('Paste five-letter answers separated by spaces, commas, or new lines.'),
