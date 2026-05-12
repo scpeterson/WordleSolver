@@ -58,10 +58,7 @@ let private parseRequest (request: SolveRequest) =
             (Ok [])
         |> Result.map List.rev
 
-[<EntryPoint>]
-let main args =
-    let builder = WebApplication.CreateBuilder(args)
-
+let configureServices (builder: WebApplicationBuilder) =
     let rateLimit =
         builder.Configuration.GetSection("RateLimiting:Solve").Get<RateLimitOptions>()
         |> Option.ofObj
@@ -92,8 +89,7 @@ let main args =
         |> ignore)
     |> ignore
 
-    let app = builder.Build()
-
+let configureApp (app: WebApplication) =
     app.UseDefaultFiles() |> ignore
     app.UseStaticFiles() |> ignore
     app.UseRateLimiter() |> ignore
@@ -122,6 +118,17 @@ let main args =
         .RequireRateLimiting("solve")
     |> ignore
 
+let createApp (args: string array) =
+    let builder = WebApplication.CreateBuilder(args)
+    configureServices builder
+
+    let app = builder.Build()
+    configureApp app
+    app
+
+[<EntryPoint>]
+let main args =
+    let app = createApp args
     app.Run()
 
     0 // Exit code
