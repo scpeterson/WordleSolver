@@ -65,6 +65,23 @@ https://gist.github.com/cfreshman/a03ef2cba789d8cf00c08f767e0fad7b
 
 This is the original static answer list, not a live feed of the current New York Times curated Wordle answer pool. Do not refresh it automatically on a schedule. If the answer list needs to change, update it manually in a pull request so the behavior change can be reviewed with the tests.
 
+## Frontend
+
+The browser UI is compiled from Elm source in `WordleSolver.Elm` into the committed asset `WordleSolver/wwwroot/app.js`.
+
+After changing Elm code, rebuild the committed client bundle:
+
+```bash
+npm run build:client
+```
+
+Before committing, verify the checked-in bundle is current and run the Elm tests:
+
+```bash
+npm run check:client
+npm run test:client
+```
+
 ## Verify
 
 ```bash
