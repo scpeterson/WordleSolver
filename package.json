@@ -3,9 +3,11 @@
     "build:client": "cd WordleSolver.Elm && elm make src/Main.elm --optimize --output ../WordleSolver/wwwroot/app.js",
     "check:client": "node scripts/check-client-current.mjs",
     "install:hooks": "node scripts/install-git-hooks.mjs",
-    "test:client": "cd WordleSolver.Elm && elm-test"
+    "test:client": "cd WordleSolver.Elm && elm-test",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "elm": "^0.19.1-6",
     "elm-test": "^0.19.1-revision16"
   }
