@@ -82,6 +82,12 @@ npm run check:client
 npm run test:client
 ```
 
+To catch stale generated client files before pushing, install the optional pre-push hook:
+
+```bash
+npm run install:hooks
+```
+
 ## Verify
 
 ```bash
