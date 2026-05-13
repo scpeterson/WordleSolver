@@ -60,3 +60,9 @@ jobs:
 
       - name: Test
         run: dotnet test WordleSolverNew.sln --configuration Release --no-build --verbosity normal
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - name: Test browser smoke coverage
+        run: npm run test:e2e

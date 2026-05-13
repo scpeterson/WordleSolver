@@ -53,6 +53,8 @@ PublishProfiles/
 
 # Test and coverage output
 TestResults/
+playwright-report/
+test-results/
 coverage/
 *.coverage
 *.coveragexml
