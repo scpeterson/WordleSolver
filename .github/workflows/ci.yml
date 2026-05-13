@@ -32,6 +32,13 @@ jobs:
       - name: Test Elm client
         run: npm run test:client
 
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: wordle-frontend
+          path: WordleSolver/wwwroot
+          if-no-files-found: error
+
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
         with:
