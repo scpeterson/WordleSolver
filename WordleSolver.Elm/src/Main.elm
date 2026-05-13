@@ -582,7 +582,7 @@ view model =
             else
                 currentValidationError
     in
-    div [ class "shell" ]
+    div [ class "shell", attribute "role" "main" ]
         [ section [ class "panel" ]
             [ h1 [] [ text "Wordle Solver" ]
             , p [ class "lede" ] [ text "Enter each guess and click feedback tiles until they match Wordle: G green, Y yellow, B gray." ]

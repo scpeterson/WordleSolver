@@ -1,9 +1,16 @@
+import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 test("solves a constrained game without mobile overflow", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Wordle Solver" })).toBeVisible();
+
+  const accessibilityScan = await new AxeBuilder({ page }).analyze();
+  expect(accessibilityScan.violations).toEqual([]);
+
+  await page.keyboard.press("Tab");
+  await expect(page.getByLabel("Guess")).toBeFocused();
 
   await page.getByLabel("Guess").fill("crane");
 
