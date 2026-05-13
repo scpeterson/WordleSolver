@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+echo "Checking generated Elm client before push..."
+npm run check:client
