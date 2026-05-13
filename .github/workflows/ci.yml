@@ -31,14 +31,11 @@ jobs:
       - name: Restore frontend dependencies
         run: npm ci
 
-      - name: Build Elm client
-        run: npm run build:client
+      - name: Verify generated Elm client is current
+        run: npm run check:client
 
       - name: Test Elm client
         run: npm run test:client
-
-      - name: Verify generated client is current
-        run: git diff --exit-code -- WordleSolver/wwwroot/app.js
 
       - name: Restore dependencies
         run: dotnet restore WordleSolverNew.sln
