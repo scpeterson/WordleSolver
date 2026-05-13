@@ -1,6 +1,7 @@
 {
   "scripts": {
     "build:client": "cd WordleSolver.Elm && elm make src/Main.elm --optimize --output ../WordleSolver/wwwroot/app.js",
+    "check:client": "node scripts/check-client-current.mjs",
     "test:client": "cd WordleSolver.Elm && elm-test"
   },
   "devDependencies": {
