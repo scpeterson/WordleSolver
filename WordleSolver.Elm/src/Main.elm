@@ -81,6 +81,106 @@ initialModel =
     }
 
 
+appTitle : String
+appTitle =
+    "Wordle Solver"
+
+
+appInstructions : String
+appInstructions =
+    "Enter each guess and click feedback tiles until they match Wordle: G green, Y yellow, B gray."
+
+
+emptyGuessError : String
+emptyGuessError =
+    "Enter at least one guess with feedback."
+
+
+guessLengthError : String
+guessLengthError =
+    "Enter five letters for each guess."
+
+
+feedbackMissingError : String
+feedbackMissingError =
+    "Select feedback for each entered guess."
+
+
+unexpectedApiResponseError : String
+unexpectedApiResponseError =
+    "The solver API returned an unexpected response."
+
+
+fallbackSolveError : String
+fallbackSolveError =
+    "Unable to solve right now."
+
+
+solverApiNotReachableError : String
+solverApiNotReachableError =
+    "The solver API is not reachable."
+
+
+solveLabel : String
+solveLabel =
+    "Solve"
+
+
+solvingLabel : String
+solvingLabel =
+    "Solving..."
+
+
+addGuessLabel : String
+addGuessLabel =
+    "Add Guess"
+
+
+resetLabel : String
+resetLabel =
+    "Reset"
+
+
+removeLabel : String
+removeLabel =
+    "Remove"
+
+
+hardModeLabel : String
+hardModeLabel =
+    "Hard Mode"
+
+
+customCandidatesLabel : String
+customCandidatesLabel =
+    "Optional candidate words"
+
+
+customCandidatesPlaceholder : String
+customCandidatesPlaceholder =
+    "Paste five-letter answers separated by spaces, commas, or new lines."
+
+
+possibleAnswersLabel : String
+possibleAnswersLabel =
+    "possible answers"
+
+
+guessPlaceholder : String
+guessPlaceholder =
+    "GUESS"
+
+
+guessAriaLabel : String
+guessAriaLabel =
+    "Guess"
+
+
+feedbackButtonTitle : String
+feedbackButtonTitle =
+    "Cycle feedback"
+
+
 cleanGuess : String -> String
 cleanGuess value =
     value
@@ -151,7 +251,7 @@ update msg model =
                 )
 
             else if List.isEmpty (enteredGuesses model) then
-                ( { model | loading = False, error = "Enter at least one guess with feedback." }
+                ( { model | loading = False, error = emptyGuessError }
                 , Cmd.none
                 )
 
@@ -247,10 +347,10 @@ guessInputError model =
             enteredGuesses model
     in
     if List.any (\guess -> String.length guess.guess /= 5) entered then
-        Just "Enter five letters for each guess."
+        Just guessLengthError
 
     else if List.any (not << feedbackComplete) entered then
-        Just "Select feedback for each entered guess."
+        Just feedbackMissingError
 
     else
         Nothing
@@ -510,21 +610,21 @@ decodeSolveResponse response =
     case response of
         Http.GoodStatus_ _ body ->
             Decode.decodeString solveResponseDecoder body
-                |> Result.mapError (\_ -> "The solver API returned an unexpected response.")
+                |> Result.mapError (\_ -> unexpectedApiResponseError)
 
         Http.BadStatus_ _ body ->
             Decode.decodeString errorResponseDecoder body
-                |> Result.withDefault "Unable to solve right now."
+                |> Result.withDefault fallbackSolveError
                 |> Err
 
         Http.BadUrl_ _ ->
-            Err "The solver API is not reachable."
+            Err solverApiNotReachableError
 
         Http.Timeout_ ->
-            Err "The solver API is not reachable."
+            Err solverApiNotReachableError
 
         Http.NetworkError_ ->
-            Err "The solver API is not reachable."
+            Err solverApiNotReachableError
 
 
 solveRequestEncoder : Model -> Encode.Value
@@ -584,15 +684,15 @@ view model =
     in
     div [ class "shell", attribute "role" "main" ]
         [ section [ class "panel" ]
-            [ h1 [] [ text "Wordle Solver" ]
-            , p [ class "lede" ] [ text "Enter each guess and click feedback tiles until they match Wordle: G green, Y yellow, B gray." ]
+            [ h1 [] [ text appTitle ]
+            , p [ class "lede" ] [ text appInstructions ]
             , Keyed.node "div"
                 [ class "guess-list" ]
                 (List.map (\guess -> ( String.fromInt guess.id, guessView model guess )) model.guesses)
             , div [ class "actions" ]
-                [ button [ class "primary", disabled (not (String.isEmpty currentValidationError)), onClick Solve ] [ text (if model.loading then "Solving..." else "Solve") ]
-                , button [ class "secondary", disabled addGuessDisabled, onClick AddGuess ] [ text "Add Guess" ]
-                , button [ class "secondary", onClick Reset ] [ text "Reset" ]
+                [ button [ class "primary", disabled (not (String.isEmpty currentValidationError)), onClick Solve ] [ text (if model.loading then solvingLabel else solveLabel) ]
+                , button [ class "secondary", disabled addGuessDisabled, onClick AddGuess ] [ text addGuessLabel ]
+                , button [ class "secondary", onClick Reset ] [ text resetLabel ]
                 ]
             , p [ class "error", attribute "role" "status" ] [ text visibleError ]
             , div [ class "solve-options" ]
@@ -603,15 +703,15 @@ view model =
                         , onCheck HardModeChanged
                         ]
                         []
-                    , span [] [ text "Hard Mode" ]
+                    , span [] [ text hardModeLabel ]
                     ]
                 , div [ class "candidate-input" ]
-                    [ label [ class "hint", attribute "for" "custom-candidates" ] [ text "Optional candidate words" ]
+                    [ label [ class "hint", attribute "for" "custom-candidates" ] [ text customCandidatesLabel ]
                     , textarea
                         [ value model.customCandidates
                         , attribute "id" "custom-candidates"
                         , attribute "data-focus-key" "custom-candidates"
-                        , placeholder "Paste five-letter answers separated by spaces, commas, or new lines."
+                        , placeholder customCandidatesPlaceholder
                         , onInput CustomCandidatesChanged
                         ]
                         []
@@ -622,7 +722,7 @@ view model =
             [ div [ class "summary" ]
                 [ div []
                     [ div [ class "count" ] [ text (String.fromInt model.count) ]
-                    , div [ class "hint" ] [ text "possible answers" ]
+                    , div [ class "hint" ] [ text possibleAnswersLabel ]
                     ]
                 ]
             , div [ class "word-grid" ] (List.map wordView model.possibilities)
@@ -637,16 +737,16 @@ guessView model guess =
             [ class "word-input"
             , value guess.guess
             , maxlength 5
-            , placeholder "GUESS"
+            , placeholder guessPlaceholder
             , attribute "data-focus-key" ("guess-" ++ String.fromInt guess.id)
-            , attribute "aria-label" "Guess"
+            , attribute "aria-label" guessAriaLabel
             , onInput (GuessChanged guess.id)
             ]
             []
         , div [ class "feedback-grid" ]
             (List.indexedMap (feedbackButton guess.id) guess.feedback)
         , if List.length model.guesses > 1 then
-            button [ class "remove", onClick (RemoveGuess guess.id) ] [ text "Remove" ]
+            button [ class "remove", onClick (RemoveGuess guess.id) ] [ text removeLabel ]
 
           else
             span [] []
@@ -657,7 +757,7 @@ feedbackButton : Int -> Int -> Maybe Feedback -> Html Msg
 feedbackButton id index feedback =
     button
         [ classList [ ( "tile", True ), ( feedbackClass feedback, True ) ]
-        , title "Cycle feedback"
+        , title feedbackButtonTitle
         , attribute "aria-label" ("Feedback position " ++ String.fromInt (index + 1))
         , onClick (FeedbackChanged id index)
         ]

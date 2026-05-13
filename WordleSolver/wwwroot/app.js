@@ -5787,6 +5787,7 @@ var $author$project$Main$cleanGuess = function (value) {
 			$elm$core$Char$isAlpha,
 			A2($elm$core$String$left, 5, value)));
 };
+var $author$project$Main$emptyGuessError = 'Enter at least one guess with feedback.';
 var $author$project$Main$enteredGuesses = function (model) {
 	return A2(
 		$elm$core$List$filter,
@@ -5827,6 +5828,7 @@ var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$json$Json$Decode$string = _Json_decodeString;
 var $author$project$Main$errorResponseDecoder = A2($elm$json$Json$Decode$field, 'error', $elm$json$Json$Decode$string);
+var $author$project$Main$fallbackSolveError = 'Unable to solve right now.';
 var $elm$core$Result$mapError = F2(
 	function (f, result) {
 		if (!result.$) {
@@ -5848,6 +5850,8 @@ var $author$project$Main$solveResponseDecoder = A3(
 		$elm$json$Json$Decode$field,
 		'possibilities',
 		$elm$json$Json$Decode$list($elm$json$Json$Decode$string)));
+var $author$project$Main$solverApiNotReachableError = 'The solver API is not reachable.';
+var $author$project$Main$unexpectedApiResponseError = 'The solver API returned an unexpected response.';
 var $elm$core$Result$withDefault = F2(
 	function (def, result) {
 		if (!result.$) {
@@ -5864,7 +5868,7 @@ var $author$project$Main$decodeSolveResponse = function (response) {
 			return A2(
 				$elm$core$Result$mapError,
 				function (_v1) {
-					return 'The solver API returned an unexpected response.';
+					return $author$project$Main$unexpectedApiResponseError;
 				},
 				A2($elm$json$Json$Decode$decodeString, $author$project$Main$solveResponseDecoder, body));
 		case 3:
@@ -5872,14 +5876,14 @@ var $author$project$Main$decodeSolveResponse = function (response) {
 			return $elm$core$Result$Err(
 				A2(
 					$elm$core$Result$withDefault,
-					'Unable to solve right now.',
+					$author$project$Main$fallbackSolveError,
 					A2($elm$json$Json$Decode$decodeString, $author$project$Main$errorResponseDecoder, body)));
 		case 0:
-			return $elm$core$Result$Err('The solver API is not reachable.');
+			return $elm$core$Result$Err($author$project$Main$solverApiNotReachableError);
 		case 1:
-			return $elm$core$Result$Err('The solver API is not reachable.');
+			return $elm$core$Result$Err($author$project$Main$solverApiNotReachableError);
 		default:
-			return $elm$core$Result$Err('The solver API is not reachable.');
+			return $elm$core$Result$Err($author$project$Main$solverApiNotReachableError);
 	}
 };
 var $elm$http$Http$BadStatus_ = F2(
@@ -6726,6 +6730,8 @@ var $author$project$Main$updateGuess = F3(
 			},
 			guesses);
 	});
+var $author$project$Main$feedbackMissingError = 'Select feedback for each entered guess.';
+var $author$project$Main$guessLengthError = 'Enter five letters for each guess.';
 var $author$project$Main$guessInputError = function (model) {
 	var entered = $author$project$Main$enteredGuesses(model);
 	return A2(
@@ -6733,10 +6739,10 @@ var $author$project$Main$guessInputError = function (model) {
 		function (guess) {
 			return $elm$core$String$length(guess.l) !== 5;
 		},
-		entered) ? $elm$core$Maybe$Just('Enter five letters for each guess.') : (A2(
+		entered) ? $elm$core$Maybe$Just($author$project$Main$guessLengthError) : (A2(
 		$elm$core$List$any,
 		A2($elm$core$Basics$composeL, $elm$core$Basics$not, $author$project$Main$feedbackComplete),
-		entered) ? $elm$core$Maybe$Just('Select feedback for each entered guess.') : $elm$core$Maybe$Nothing);
+		entered) ? $elm$core$Maybe$Just($author$project$Main$feedbackMissingError) : $elm$core$Maybe$Nothing);
 };
 var $author$project$Main$validationError = function (model) {
 	var _v0 = $author$project$Main$guessInputError(model);
@@ -6842,7 +6848,7 @@ var $author$project$Main$update = F2(
 					$author$project$Main$enteredGuesses(model)) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{I: 'Enter at least one guess with feedback.', J: false}),
+						{I: $author$project$Main$emptyGuessError, J: false}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -6876,6 +6882,9 @@ var $author$project$Main$HardModeChanged = function (a) {
 };
 var $author$project$Main$Reset = {$: 9};
 var $author$project$Main$Solve = {$: 6};
+var $author$project$Main$addGuessLabel = 'Add Guess';
+var $author$project$Main$appInstructions = 'Enter each guess and click feedback tiles until they match Wordle: G green, Y yellow, B gray.';
+var $author$project$Main$appTitle = 'Wordle Solver';
 var $elm$virtual_dom$VirtualDom$attribute = F2(
 	function (key, value) {
 		return A2(
@@ -6901,6 +6910,8 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			$elm$json$Json$Encode$string(string));
 	});
 var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $author$project$Main$customCandidatesLabel = 'Optional candidate words';
+var $author$project$Main$customCandidatesPlaceholder = 'Paste five-letter answers separated by spaces, commas, or new lines.';
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$GuessChanged = F2(
@@ -6928,6 +6939,7 @@ var $elm$html$Html$Attributes$classList = function (classes) {
 				$elm$core$Tuple$first,
 				A2($elm$core$List$filter, $elm$core$Tuple$second, classes))));
 };
+var $author$project$Main$feedbackButtonTitle = 'Cycle feedback';
 var $author$project$Main$feedbackClass = function (feedback) {
 	if (feedback.$ === 1) {
 		return 'unset';
@@ -6985,7 +6997,7 @@ var $author$project$Main$feedbackButton = F3(
 							$author$project$Main$feedbackClass(feedback),
 							true)
 						])),
-					$elm$html$Html$Attributes$title('Cycle feedback'),
+					$elm$html$Html$Attributes$title($author$project$Main$feedbackButtonTitle),
 					A2(
 					$elm$html$Html$Attributes$attribute,
 					'aria-label',
@@ -6999,6 +7011,8 @@ var $author$project$Main$feedbackButton = F3(
 					$author$project$Main$feedbackValueLabel(feedback))
 				]));
 	});
+var $author$project$Main$guessAriaLabel = 'Guess';
+var $author$project$Main$guessPlaceholder = 'GUESS';
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Attributes$maxlength = function (n) {
 	return A2(
@@ -7038,6 +7052,7 @@ var $elm$html$Html$Events$onInput = function (tagger) {
 			A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetValue)));
 };
 var $elm$html$Html$Attributes$placeholder = $elm$html$Html$Attributes$stringProperty('placeholder');
+var $author$project$Main$removeLabel = 'Remove';
 var $elm$html$Html$section = _VirtualDom_node('section');
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$value = $elm$html$Html$Attributes$stringProperty('value');
@@ -7058,12 +7073,12 @@ var $author$project$Main$guessView = F2(
 							$elm$html$Html$Attributes$class('word-input'),
 							$elm$html$Html$Attributes$value(guess.l),
 							$elm$html$Html$Attributes$maxlength(5),
-							$elm$html$Html$Attributes$placeholder('GUESS'),
+							$elm$html$Html$Attributes$placeholder($author$project$Main$guessPlaceholder),
 							A2(
 							$elm$html$Html$Attributes$attribute,
 							'data-focus-key',
 							'guess-' + $elm$core$String$fromInt(guess.E)),
-							A2($elm$html$Html$Attributes$attribute, 'aria-label', 'Guess'),
+							A2($elm$html$Html$Attributes$attribute, 'aria-label', $author$project$Main$guessAriaLabel),
 							$elm$html$Html$Events$onInput(
 							$author$project$Main$GuessChanged(guess.E))
 						]),
@@ -7088,11 +7103,12 @@ var $author$project$Main$guessView = F2(
 						]),
 					_List_fromArray(
 						[
-							$elm$html$Html$text('Remove')
+							$elm$html$Html$text($author$project$Main$removeLabel)
 						])) : A2($elm$html$Html$span, _List_Nil, _List_Nil)
 				]));
 	});
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $author$project$Main$hardModeLabel = 'Hard Mode';
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
 	return _VirtualDom_keyedNode(
@@ -7112,6 +7128,10 @@ var $elm$html$Html$Events$onCheck = function (tagger) {
 		A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetChecked));
 };
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $author$project$Main$possibleAnswersLabel = 'possible answers';
+var $author$project$Main$resetLabel = 'Reset';
+var $author$project$Main$solveLabel = 'Solve';
+var $author$project$Main$solvingLabel = 'Solving...';
 var $elm$html$Html$textarea = _VirtualDom_node('textarea');
 var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
 var $author$project$Main$wordView = function (word) {
@@ -7152,7 +7172,7 @@ var $author$project$Main$view = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Wordle Solver')
+								$elm$html$Html$text($author$project$Main$appTitle)
 							])),
 						A2(
 						$elm$html$Html$p,
@@ -7162,7 +7182,7 @@ var $author$project$Main$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								$elm$html$Html$text('Enter each guess and click feedback tiles until they match Wordle: G green, Y yellow, B gray.')
+								$elm$html$Html$text($author$project$Main$appInstructions)
 							])),
 						A3(
 						$elm$html$Html$Keyed$node,
@@ -7199,7 +7219,7 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$elm$html$Html$text(
-										model.J ? 'Solving...' : 'Solve')
+										model.J ? $author$project$Main$solvingLabel : $author$project$Main$solveLabel)
 									])),
 								A2(
 								$elm$html$Html$button,
@@ -7211,7 +7231,7 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Add Guess')
+										$elm$html$Html$text($author$project$Main$addGuessLabel)
 									])),
 								A2(
 								$elm$html$Html$button,
@@ -7222,7 +7242,7 @@ var $author$project$Main$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Reset')
+										$elm$html$Html$text($author$project$Main$resetLabel)
 									]))
 							])),
 						A2(
@@ -7266,7 +7286,7 @@ var $author$project$Main$view = function (model) {
 										_List_Nil,
 										_List_fromArray(
 											[
-												$elm$html$Html$text('Hard Mode')
+												$elm$html$Html$text($author$project$Main$hardModeLabel)
 											]))
 									])),
 								A2(
@@ -7286,7 +7306,7 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('Optional candidate words')
+												$elm$html$Html$text($author$project$Main$customCandidatesLabel)
 											])),
 										A2(
 										$elm$html$Html$textarea,
@@ -7295,7 +7315,7 @@ var $author$project$Main$view = function (model) {
 												$elm$html$Html$Attributes$value(model.ae),
 												A2($elm$html$Html$Attributes$attribute, 'id', 'custom-candidates'),
 												A2($elm$html$Html$Attributes$attribute, 'data-focus-key', 'custom-candidates'),
-												$elm$html$Html$Attributes$placeholder('Paste five-letter answers separated by spaces, commas, or new lines.'),
+												$elm$html$Html$Attributes$placeholder($author$project$Main$customCandidatesPlaceholder),
 												$elm$html$Html$Events$onInput($author$project$Main$CustomCandidatesChanged)
 											]),
 										_List_Nil)
@@ -7342,7 +7362,7 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												$elm$html$Html$text('possible answers')
+												$elm$html$Html$text($author$project$Main$possibleAnswersLabel)
 											]))
 									]))
 							])),
