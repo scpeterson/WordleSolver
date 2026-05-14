@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.vs
+bin
+obj
+node_modules
+elm-stuff
+TestResults
+coverage
+playwright-report
+test-results
+*.user
+*.suo
+*.log
+*.tmp
+.DS_Store
