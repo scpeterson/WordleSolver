@@ -10,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend Tooling", "Frontend Tooling", "{34E5B3CB-FB26-448D-BBF2-8C39B7FC40F8}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.dockerignore = .dockerignore
+		Dockerfile = Dockerfile
 		package-lock.json = package-lock.json
 		package.json = package.json
 	EndProjectSection
