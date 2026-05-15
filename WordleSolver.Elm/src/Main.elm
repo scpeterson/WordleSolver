@@ -701,14 +701,16 @@ view model =
                 ]
             , p [ class "error", attribute "role" "status" ] [ text visibleError ]
             , div [ class "solve-options" ]
-                [ label [ class "hard-mode" ]
-                    [ input
-                        [ type_ "checkbox"
-                        , checked model.hardMode
-                        , onCheck HardModeChanged
+                [ div [ class "hard-mode" ]
+                    [ label [ class "hard-mode-control" ]
+                        [ input
+                            [ type_ "checkbox"
+                            , checked model.hardMode
+                            , onCheck HardModeChanged
+                            ]
+                            []
+                        , span [] [ text hardModeLabel ]
                         ]
-                        []
-                    , span [] [ text hardModeLabel ]
                     , span [ class "hard-mode-hint" ] [ text hardModeHint ]
                     ]
                 , div [ class "candidate-input" ]

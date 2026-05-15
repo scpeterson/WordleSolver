@@ -7266,7 +7266,7 @@ var $author$project$Main$view = function (model) {
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$label,
+								$elm$html$Html$div,
 								_List_fromArray(
 									[
 										$elm$html$Html$Attributes$class('hard-mode')
@@ -7274,20 +7274,29 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										A2(
-										$elm$html$Html$input,
+										$elm$html$Html$label,
 										_List_fromArray(
 											[
-												$elm$html$Html$Attributes$type_('checkbox'),
-												$elm$html$Html$Attributes$checked(model.X),
-												$elm$html$Html$Events$onCheck($author$project$Main$HardModeChanged)
+												$elm$html$Html$Attributes$class('hard-mode-control')
 											]),
-										_List_Nil),
-										A2(
-										$elm$html$Html$span,
-										_List_Nil,
 										_List_fromArray(
 											[
-												$elm$html$Html$text($author$project$Main$hardModeLabel)
+												A2(
+												$elm$html$Html$input,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$type_('checkbox'),
+														$elm$html$Html$Attributes$checked(model.X),
+														$elm$html$Html$Events$onCheck($author$project$Main$HardModeChanged)
+													]),
+												_List_Nil),
+												A2(
+												$elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text($author$project$Main$hardModeLabel)
+													]))
 											])),
 										A2(
 										$elm$html$Html$span,
