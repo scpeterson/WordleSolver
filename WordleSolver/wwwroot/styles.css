@@ -175,6 +175,12 @@ h1 {
   height: 18px;
 }
 
+.hard-mode-hint {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+
 .candidate-input {
   display: grid;
   gap: 8px;

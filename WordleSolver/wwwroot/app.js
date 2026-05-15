@@ -7108,6 +7108,7 @@ var $author$project$Main$guessView = F2(
 				]));
 	});
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $author$project$Main$hardModeHint = '(any revealed hints must be used in your next guesses)';
 var $author$project$Main$hardModeLabel = 'Hard Mode';
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$virtual_dom$VirtualDom$keyedNode = function (tag) {
@@ -7287,6 +7288,16 @@ var $author$project$Main$view = function (model) {
 										_List_fromArray(
 											[
 												$elm$html$Html$text($author$project$Main$hardModeLabel)
+											])),
+										A2(
+										$elm$html$Html$span,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('hard-mode-hint')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text($author$project$Main$hardModeHint)
 											]))
 									])),
 								A2(

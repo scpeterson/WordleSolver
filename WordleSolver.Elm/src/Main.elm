@@ -151,6 +151,11 @@ hardModeLabel =
     "Hard Mode"
 
 
+hardModeHint : String
+hardModeHint =
+    "(any revealed hints must be used in your next guesses)"
+
+
 customCandidatesLabel : String
 customCandidatesLabel =
     "Optional candidate words"
@@ -704,6 +709,7 @@ view model =
                         ]
                         []
                     , span [] [ text hardModeLabel ]
+                    , span [ class "hard-mode-hint" ] [ text hardModeHint ]
                     ]
                 , div [ class "candidate-input" ]
                     [ label [ class "hint", attribute "for" "custom-candidates" ] [ text customCandidatesLabel ]
