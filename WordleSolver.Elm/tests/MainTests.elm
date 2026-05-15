@@ -56,6 +56,20 @@ all =
                 in
                 model.hardMode
                     |> Expect.equal True
+        , test "Solve with a valid guess shows the loading state immediately" <|
+            \_ ->
+                let
+                    ( model, _ ) =
+                        initialModelWithGuess "crane"
+                            |> Main.update Solve
+                in
+                { error = model.error
+                , loading = model.loading
+                }
+                    |> Expect.equal
+                        { error = ""
+                        , loading = True
+                        }
         , test "feedback starts unselected and first click selects absent feedback" <|
             \_ ->
                 let

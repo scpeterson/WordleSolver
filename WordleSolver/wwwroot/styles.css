@@ -60,9 +60,14 @@ h1 {
 
 .lede,
 .hint,
+.loading-status,
 .error {
   color: var(--muted);
   line-height: 1.45;
+}
+
+.loading-status {
+  min-height: 22px;
 }
 
 .error {
