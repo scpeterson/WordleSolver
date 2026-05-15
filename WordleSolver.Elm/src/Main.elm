@@ -151,6 +151,11 @@ hardModeLabel =
     "Hard Mode"
 
 
+hardModeHint : String
+hardModeHint =
+    "(any revealed hints must be used in your next guesses)"
+
+
 customCandidatesLabel : String
 customCandidatesLabel =
     "Optional candidate words"
@@ -696,14 +701,17 @@ view model =
                 ]
             , p [ class "error", attribute "role" "status" ] [ text visibleError ]
             , div [ class "solve-options" ]
-                [ label [ class "hard-mode" ]
-                    [ input
-                        [ type_ "checkbox"
-                        , checked model.hardMode
-                        , onCheck HardModeChanged
+                [ div [ class "hard-mode" ]
+                    [ label [ class "hard-mode-control" ]
+                        [ input
+                            [ type_ "checkbox"
+                            , checked model.hardMode
+                            , onCheck HardModeChanged
+                            ]
+                            []
+                        , span [] [ text hardModeLabel ]
                         ]
-                        []
-                    , span [] [ text hardModeLabel ]
+                    , span [ class "hard-mode-hint" ] [ text hardModeHint ]
                     ]
                 , div [ class "candidate-input" ]
                     [ label [ class "hint", attribute "for" "custom-candidates" ] [ text customCandidatesLabel ]

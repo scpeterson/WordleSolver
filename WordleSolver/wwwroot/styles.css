@@ -164,15 +164,26 @@ h1 {
 }
 
 .hard-mode {
+  font-weight: 650;
+}
+
+.hard-mode-control {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-weight: 650;
 }
 
 .hard-mode input {
   width: 18px;
   height: 18px;
+}
+
+.hard-mode-hint {
+  color: var(--muted);
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 4px 0 0 30px;
 }
 
 .candidate-input {
