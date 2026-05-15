@@ -131,6 +131,11 @@ solvingLabel =
     "Solving..."
 
 
+solverApiWakeStatus : String
+solverApiWakeStatus =
+    "Contacting the solver API. This can take up to a minute if the service is waking up."
+
+
 addGuessLabel : String
 addGuessLabel =
     "Add Guess"
@@ -680,12 +685,22 @@ view model =
         addGuessDisabled =
             not (canAddGuess model)
 
+        solveDisabled =
+            model.loading || not (String.isEmpty currentValidationError)
+
         visibleError =
             if String.isEmpty currentValidationError then
                 model.error
 
             else
                 currentValidationError
+
+        visibleStatus =
+            if model.loading then
+                solverApiWakeStatus
+
+            else
+                ""
     in
     div [ class "shell", attribute "role" "main" ]
         [ section [ class "panel" ]
@@ -695,10 +710,11 @@ view model =
                 [ class "guess-list" ]
                 (List.map (\guess -> ( String.fromInt guess.id, guessView model guess )) model.guesses)
             , div [ class "actions" ]
-                [ button [ class "primary", disabled (not (String.isEmpty currentValidationError)), onClick Solve ] [ text (if model.loading then solvingLabel else solveLabel) ]
+                [ button [ class "primary", disabled solveDisabled, onClick Solve ] [ text (if model.loading then solvingLabel else solveLabel) ]
                 , button [ class "secondary", disabled addGuessDisabled, onClick AddGuess ] [ text addGuessLabel ]
                 , button [ class "secondary", onClick Reset ] [ text resetLabel ]
                 ]
+            , p [ class "loading-status", attribute "role" "status" ] [ text visibleStatus ]
             , p [ class "error", attribute "role" "status" ] [ text visibleError ]
             , div [ class "solve-options" ]
                 [ div [ class "hard-mode" ]
